@@ -46,6 +46,7 @@ class ReflexAgent(Agent):
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
+		
 
         "Add more of your code here if you want to"
 
@@ -68,13 +69,42 @@ class ReflexAgent(Agent):
         """
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
+        #print("successorGameState = ",successorGameState)
         newPos = successorGameState.getPacmanPosition()
+        #print("newPos = ",newPos)
         newFood = successorGameState.getFood()
+        #print("newFood = ",newFood)
         newGhostStates = successorGameState.getGhostStates()
+        #print("newGhostStates = ",newGhostStates)
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        #print("newScaredTimes = ",newScaredTimes)
+               
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        #print (newFood.asList())
+        min_dist_food = -1
+        for f in newFood.asList():
+            dist_pac_food = util.manhattanDistance(newPos,f)
+            if dist_pac_food <= min_dist_food or min_dist_food == -1:
+                min_dist_food = dist_pac_food
+        
+        dist_pac_ghost = 1
+        closeness_to_ghost = 0
+        #print(successorGameState.getGhostPositions())
+        for ghost_pos in successorGameState.getGhostPositions():
+            dist = util.manhattanDistance(newPos,ghost_pos)
+            dist_pac_ghost = dist_pac_ghost + 1
+            if dist <= 1:
+                closeness_to_ghost = closeness_to_ghost + 1
+
+        val = successorGameState.getScore()
+        val_1 = val + (1/float(min_dist_food)) - (1/float(dist_pac_ghost)) - closeness_to_ghost
+        
+       
+		
+		
+		
+        return val_1
 
 def scoreEvaluationFunction(currentGameState):
     """
