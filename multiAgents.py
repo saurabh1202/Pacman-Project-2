@@ -159,7 +159,42 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def minimax(agent, depth, gameState):
+            if gameState.isLose(): #return score if Pacman Lose
+                return self.evaluationFunction(gameState)
+            elif gameState.isWin(): #return Score if Pacman Win
+                return self.evaluationFunction(gameState)
+            elif depth == self.depth:#return Score if depth is reached
+				return self.evaluationFunction(gameState)
+            if agent == 0:  # Here Pacman is the maximising agent
+                return max(minimax(1, depth, gameState.generateSuccessor(agent, this_action)) for this_action in gameState.getLegalActions(agent))
+            else:  # Ghosts are the minimizing agents
+                new_Agent = agent + 1
+                if gameState.getNumAgents() == new_Agent:
+                    new_Agent = 0
+                if new_Agent == 0:
+                    depth += 1
+                return min(minimax(new_Agent, depth, gameState.generateSuccessor(agent, this_action)) for this_action in gameState.getLegalActions(agent))
+
+        
+        x= float("-inf")
+        max1 = x
+        action = Directions.STOP
+        legal_actions = [act for act in gameState.getLegalActions(0)]
+		#print(legal_actions)
+        for legal_action in legal_actions:
+            utility = minimax(1, 0, gameState.generateSuccessor(0, legal_action))
+            if utility > max1 or max1 == x:
+                max1 = utility
+                action = legal_action
+
+        return action
+
+        
+			 
+                 
+        #util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -171,7 +206,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        #util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -186,7 +222,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
+        
         util.raiseNotDefined()
+        
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -196,6 +234,7 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+   
     util.raiseNotDefined()
 
 # Abbreviation
