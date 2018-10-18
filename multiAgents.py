@@ -82,6 +82,7 @@ class ReflexAgent(Agent):
 
         "*** YOUR CODE HERE ***"
         #print (newFood.asList())
+        #exit()
         min_dist_food = -1
         for f in newFood.asList():
             dist_pac_food = util.manhattanDistance(newPos,f)
@@ -167,7 +168,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 return self.evaluationFunction(gameState)
             elif depth == self.depth:#return Score if depth is reached
 				return self.evaluationFunction(gameState)
-            if agent == 0:  # Here Pacman is the maximising agent
+            if agent == 0:  # Pacman is the maximising agent
                 return max(minimax(1, depth, gameState.generateSuccessor(agent, this_action)) for this_action in gameState.getLegalActions(agent))
             else:  # Ghosts are the minimizing agents
                 new_Agent = agent + 1
@@ -206,6 +207,61 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        def minimise(agent, depth, game_state, a, b): 
+            v = float("inf")
+            new_agent = agent + 1 
+            if game_state.getNumAgents() == new_agent:
+                new_agent = 0
+            if new_agent == 0:
+                depth += 1
+            legal_actions = game_state.getLegalActions(agent)			
+            for legal_action in legal_actions:
+                v = min(v, prune(new_agent, depth, game_state.generateSuccessor(agent, legal_action), a, b))
+                if v < a:
+                    return v
+                b = min(b, v)
+            return v
+		
+        def maximise(agent, depth, game_state, a, b):
+            v = float("-inf")
+            legal_actions = game_state.getLegalActions(agent)	
+            for legal_action in legal_actions:
+                v = max(v, prune(1, depth, game_state.generateSuccessor(agent, legal_action), a, b))
+                if v > b:
+                    return v
+                a = max(a, v)
+            return v
+            
+        def prune(agent, depth, game_state, a, b):
+            if game_state.isLose(): 
+                return self.evaluationFunction(game_state)
+            elif game_state.isWin():
+                return self.evaluationFunction(game_state)
+            elif depth == self.depth:
+                return self.evaluationFunction(game_state)
+            if agent == 0:  # Pacman: maximising agent
+                return maximise(agent, depth, game_state, a, b)
+            else:  # Ghosts: minimizing agent
+                return minimise(agent, depth, game_state, a, b)
+
+       
+        x = float("-inf")
+        utility = x
+        action = Directions.STOP
+        y = float("-inf")
+        a = y
+        z = float("inf")
+        b = z
+        legal_actions = [act for act in gameState.getLegalActions(0)]
+        for legal_action in legal_actions:
+            ghost_val = prune(1, 0, gameState.generateSuccessor(0, legal_action), a, b)
+            if ghost_val > utility:
+                utility = ghost_val
+                action = legal_action
+            if utility > b:
+                return utility
+            a = max(a, utility)
+        return action
         
         #util.raiseNotDefined()
 
