@@ -279,17 +279,17 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         def expectimax(agent, depth, gameState):
-            if gameState.isLose():  # return the utility in case the defined depth is reached or the game is won/lost.
+            if gameState.isLose():  
                 return self.evaluationFunction(gameState)
             elif gameState.isWin():
                 return self.evaluationFunction(gameState)
             elif depth == self.depth:
                 return self.evaluationFunction(gameState)
-            if agent == 0:  # maximizing for pacman
+            if agent == 0:  # Pacman as maximising agent
                 legal_actions = [act for act in gameState.getLegalActions(agent)]
                 return max(expectimax(1, depth, gameState.generateSuccessor(agent, legal_action)) for legal_action in legal_actions)
-            else:  # performing expectimax action for ghosts/chance nodes.
-                new_Agent = agent + 1  # calculate the next agent and increase depth accordingly.
+            else:  # Performing Expectimax for chance nodes
+                new_Agent = agent + 1 
                 if gameState.getNumAgents() == new_Agent:
                     new_Agent = 0
                 if new_Agent == 0:
@@ -320,8 +320,35 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    min_dist_food = -1
+    for f in newFood.asList():
+        dist = util.manhattanDistance(newPos, f)   #Calculate the minimum distance to a food pellet
+        if min_dist_food >= dist or min_dist_food == -1:
+            min_dist_food = dist
+
+	
+    dist_pac_ghost = 1  # distance from pacman to ghost
+    closeness_to_ghost = 0 # closeness to ghost
+    for ghost_pos in currentGameState.getGhostPositions():
+        dist= util.manhattanDistance(newPos, ghost_pos)
+        dist_pac_ghost += dist
+        if dist <= 1:
+            closeness_to_ghost+= 1
+
+    
+    Capsule_loc = currentGameState.getCapsules()#getting the list of capsules
+    #print(Capsule_loc)
    
-    util.raiseNotDefined()
+    Capsules = len(Capsule_loc) #getting number of capsules
+
+    
+    return currentGameState.getScore() + (1 / float(min_dist_food)) - (1 / float(dist_pac_ghost)) - closeness_to_ghost - Capsules
+
+   
+    #util.raiseNotDefined()
 
 # Abbreviation
 better = betterEvaluationFunction
