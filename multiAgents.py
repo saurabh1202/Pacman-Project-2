@@ -278,8 +278,38 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
+        def expectimax(agent, depth, gameState):
+            if gameState.isLose():  # return the utility in case the defined depth is reached or the game is won/lost.
+                return self.evaluationFunction(gameState)
+            elif gameState.isWin():
+                return self.evaluationFunction(gameState)
+            elif depth == self.depth:
+                return self.evaluationFunction(gameState)
+            if agent == 0:  # maximizing for pacman
+                legal_actions = [act for act in gameState.getLegalActions(agent)]
+                return max(expectimax(1, depth, gameState.generateSuccessor(agent, legal_action)) for legal_action in legal_actions)
+            else:  # performing expectimax action for ghosts/chance nodes.
+                new_Agent = agent + 1  # calculate the next agent and increase depth accordingly.
+                if gameState.getNumAgents() == new_Agent:
+                    new_Agent = 0
+                if new_Agent == 0:
+                    depth += 1
+                legal_actions = [act for act in gameState.getLegalActions(agent)]
+                return sum(expectimax(new_Agent, depth, gameState.generateSuccessor(agent, legal_action)) for legal_action in legal_actions) / float(len(legal_actions))
+
         
-        util.raiseNotDefined()
+        x = float("-inf")
+        max1 = x
+        action = Directions.STOP
+        legal_actions = [act for act in gameState.getLegalActions(0)]
+        for legal_action in legal_actions:
+            utility = expectimax(1, 0, gameState.generateSuccessor(0, legal_action))
+            if utility > max1 or max1 == x:
+                max1 = utility
+                action = legal_action
+
+        return action 
+        #util.raiseNotDefined()
         
 
 def betterEvaluationFunction(currentGameState):
